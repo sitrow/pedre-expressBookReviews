@@ -45,7 +45,30 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-    
+    const user = req.session.authorization.username;
+    const ISBN = req.params.isbn;
+    const review = req.body.review;
+
+    if(!review) {
+        return res.status(400).json({message: "No review has been given"});
+    } else {
+        books[ISBN].reviews[user] = review;
+        res.status(200).json({message: "Review has been given!"})
+    }
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const user = req.session.authorization.username;
+    const ISBN = req.params.isbn;
+    if(books[ISBN].reviews[user]){
+        delete books[ISBN].reviews[user];
+        return res.status(200).json({message: `${user} review has been deleted`});
+    }
+    return res.status(400).json({message: "There has been a problem deleting"})
+
+     
+
+
 });
 
 module.exports.authenticated = regd_users;
